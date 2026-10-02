@@ -1,6 +1,7 @@
 import os
 import re
 import logging
+import asyncio
 from aiohttp import web
 from pyrogram import Client, filters
 from pyrogram.types import Message
@@ -346,22 +347,21 @@ async def start_web():
 # =========================================================
 
 async def main():
-
     await app.start()
-
     await start_web()
 
     me = await app.get_me()
+    log.info(f"Bot started: @{me.username}")
 
-    log.info(
-        f"Bot started: @{me.username}"
-    )
-
-    # Bot চলতে থাকবে
-    await app.idle()
+    # Bot চলতে থাকবে - idle() এর বিকল্প
+    try:
+        while True:
+            await asyncio.sleep(1)
+    except (KeyboardInterrupt, SystemExit):
+        log.info("Bot stopped.")
+    finally:
+        await app.stop()
 
 
 if __name__ == "__main__":
-    import asyncio
-
     asyncio.run(main())
